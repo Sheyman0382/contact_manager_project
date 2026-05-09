@@ -7,27 +7,28 @@ import os
 class Contact:
     """contanct manager class"""
 
+    FILE_NAME = "contacts.csv"
     def __init__(self, name, phone_number):
         self.name = name
         self.phone_number = phone_number
-        
+
     @property
     def name(self):
 
         """beyond just initializing, controls hw name is used"""
         return self.__name
-    
+
     @name.setter
     def name(self, value):
         if not type(value) is str:
             raise TypeError("name must be a string")
         self.__name = value
-        
+
     @property
     def phone_number(self):
         """controls internally how phone number behaves"""
         return self.__phone_number
-        
+
     @phone_number.setter
     def phone_number(self, value):
         if not type(value) is str:
@@ -38,15 +39,30 @@ class Contact:
 
     def __str__(self):
         return "{} \n{}".format(self.name, self.phone_number)
-        
+
     def to_dictionary(self):
-        return {"name": self.name, "phone_number": self.phone_number} 
+        """returns dictionary attributes of each objects"""
+        return {"name": self.name, "phone_number": self.phone_number}
 
     def save_to_file(self):
         """a method that writes into a csv file"""
 
-        with open("contacts.csv", "a", newline="") as csv_file:
-             writer = csv.writer(csv_file)
-            if not os.stat(contacts.csv).st_size:
+        with open(FILE_NAME, "a", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            if not os.stat(FILE_NAME).st_size:
                 writer.writerow(["Name", "Phone_number"])
             writer.writerow([self.name, self.phone_number])
+
+    @classmethod
+    def load_from_file(cls):
+        if not os.path.exists(FILE_NAME):
+            return []
+        if not os.stat(FILE_NAME).st_size:
+            return []
+        rows = []
+        with open(FILE_NAME, newline="") as csv_file:
+            reader = csv.reader(csv_file)
+            next(reader)
+            for row in reader:
+                rows.append(cls(row[0], row[1]))
+        return rows
