@@ -1,4 +1,4 @@
-#!/usr/bin/ppython3
+#!/usr/bin/python3
 """Contact manager module"""
 import csv
 import os
@@ -6,8 +6,8 @@ import os
 
 class Contact:
     """contanct manager class"""
-
     FILE_NAME = "contacts.csv"
+
     def __init__(self, name, phone_number):
         self.name = name
         self.phone_number = phone_number
@@ -49,20 +49,30 @@ class Contact:
 
         with open(FILE_NAME, "a", newline="") as csv_file:
             writer = csv.writer(csv_file)
-            if not os.stat(FILE_NAME).st_size:
+            if not os.stat(self.FILE_NAME).st_size:
                 writer.writerow(["Name", "Phone_number"])
             writer.writerow([self.name, self.phone_number])
 
     @classmethod
     def load_from_file(cls):
-        if not os.path.exists(FILE_NAME):
+        if not os.path.exists(cls.FILE_NAME):
             return []
-        if not os.stat(FILE_NAME).st_size:
+        if not os.stat(cls.FILE_NAME).st_size:
             return []
         rows = []
-        with open(FILE_NAME, newline="") as csv_file:
+        with open(cls.FILE_NAME, newline="") as csv_file:
             reader = csv.reader(csv_file)
             next(reader)
             for row in reader:
                 rows.append(cls(row[0], row[1]))
         return rows
+
+    @classmethod
+    def search_contact(cls, contact_name):
+        file_content = cls.load_from_file()
+        if file_content == []:
+            return "contact list is empty"
+        for obj in file_content:
+            if obj.name == contact_name:
+                return obj
+        return "contact not found"
