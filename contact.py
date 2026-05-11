@@ -47,11 +47,20 @@ class Contact:
     def save_to_file(self):
         """a method that writes into a csv file"""
 
-        with open(self.FILE_NAME, "a", newline="") as csv_file:
-            writer = csv.writer(csv_file)
-            if not os.stat(self.FILE_NAME).st_size:
-                writer.writerow(["Name", "Phone_number"])
-            writer.writerow([self.name, self.phone_number])
+        new_file_content = []
+        if os.stat(self.FILE_NAME).st_size:
+            file_content = self.load_from_file()
+            for obj in file_content:
+                new_file_content.append(obj.to_dictionary())
+        new_file_content.append(self.to_dictionary())
+        with open(self.FILE_NAME, "w", newline="") as csv_file:
+            writer = csv.DictWriter(
+                csv_file,
+                fieldnames=["name", "phone_number"]
+            )
+            writer.writeheader()
+            for obj in new_file_content:
+                writer.writerow(obj)
             print("contact saved successfully")
 
     @classmethod
