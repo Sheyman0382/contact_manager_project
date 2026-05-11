@@ -47,14 +47,16 @@ class Contact:
     def save_to_file(self):
         """a method that writes into a csv file"""
 
-        with open(FILE_NAME, "a", newline="") as csv_file:
+        with open(self.FILE_NAME, "a", newline="") as csv_file:
             writer = csv.writer(csv_file)
             if not os.stat(self.FILE_NAME).st_size:
                 writer.writerow(["Name", "Phone_number"])
             writer.writerow([self.name, self.phone_number])
+            print("contact saved successfully")
 
     @classmethod
     def load_from_file(cls):
+        """returns a list of references to object(s) as the case may be"""
         if not os.path.exists(cls.FILE_NAME):
             return []
         if not os.stat(cls.FILE_NAME).st_size:
@@ -69,6 +71,7 @@ class Contact:
 
     @classmethod
     def search_contact(cls, contact_name):
+        """searches if a contact exists of not"""
         file_content = cls.load_from_file()
         if file_content == []:
             return "contact list is empty"
@@ -76,3 +79,23 @@ class Contact:
             if obj.name == contact_name:
                 return obj
         return "contact not found"
+
+    @classmethod
+    def delete_contact(cls, contact_name):
+        """to delete unwanted contact"""
+
+        file_content = cls.load_from_file()
+        new_file_content = []
+        deleted = False
+        for obj in file_content:
+            if obj.name == contact_name:
+                deleted = True
+            else:
+                new_file_content.append([obj.name, obj.phone_number])
+        if not deleted:
+            print("contact not found")
+            return
+        with open(cls.FILE_NAME, "w", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(["Name", "Phone_number"])
+            writer.writerows(new_file_content)
