@@ -44,6 +44,13 @@ class Contact:
         """returns dictionary attributes of each objects"""
         return {"name": self.name, "phone_number": self.phone_number}
 
+    @classmethod
+    def from_dictionary(cls, dictionary):
+        return cls(
+            dictionary["name"],
+            dictionary["phone_number"]
+        )
+
     def save_to_file(self):
         """a method that writes into a csv file"""
 
@@ -72,10 +79,9 @@ class Contact:
             return []
         rows = []
         with open(cls.FILE_NAME, newline="") as csv_file:
-            reader = csv.reader(csv_file)
-            next(reader)
+            reader = csv.DictReader(csv_file)
             for row in reader:
-                rows.append(cls(row[0], row[1]))
+                rows.append(cls.from_dictionary(row))
         return rows
 
     @classmethod
@@ -100,11 +106,15 @@ class Contact:
             if obj.name == contact_name:
                 deleted = True
             else:
-                new_file_content.append([obj.name, obj.phone_number])
+                new_file_content.append(obj.to_dictionary())
         if not deleted:
             print("contact not found")
             return
         with open(cls.FILE_NAME, "w", newline="") as csv_file:
-            writer = csv.writer(csv_file)
-            writer.writerow(["Name", "Phone_number"])
-            writer.writerows(new_file_content)
+            writer = csv.DictWriter(
+                csv_file,
+                fieldname=["name", "phone_number"]
+            )
+            writer.writeheader()
+            for obj in new_file_content:
+                writer.writerow(obj)
