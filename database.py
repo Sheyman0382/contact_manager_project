@@ -42,10 +42,14 @@ class ContactDatabase:
     def add_contact(cls, contact):
         """add/maybe append a contact into the list"""
         if not isinstance(contact, Contact):
-            raise TypeError("only contact object is alowed")
-        new_file_content = cls.load_contacts()
-        new_file_content.append(contact)
-        cls.save_contacts(new_file_content)
+            raise TypeError("only contact objects are alowed")
+        contacts = cls.load_contacts()
+        for obj in contacts:
+            if obj.name == contact.name or obj.phone_number == contact.phone_number:
+                return False
+        contacts.append(contact)
+        cls.save_contacts(contacts)
+        return True
 
     @classmethod
     def delete_contact(cls, contact_name):
@@ -74,3 +78,20 @@ class ContactDatabase:
             if obj.name == contact_name:
                 return obj
         return None
+
+    @classmethod
+    def update_contact(cls, old_contact, new_contact):
+        """ """
+        file_content = cls.load_contacts()
+        new_file_content = []
+        updated = False
+        for obj in file_content:
+            if obj.name == old_contact.name:
+                new_file_content.append(new_contact)
+                updated = True
+            else:
+                new_file_content.append(obj)
+        if not updated:
+            return False
+        cls.save_contacts(new_file_content)
+        return True
