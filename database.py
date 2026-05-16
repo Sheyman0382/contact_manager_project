@@ -26,18 +26,17 @@ class ContactDatabase:
     def save_contacts(cls, contacts):
         """a method that writes into a csv file"""
 
-        new_file_content = []
+        content = []
         for obj in contacts:
-            new_file_content.append(obj.to_dictionary())
-        new_file_content.sort(key=lambda contact: contact["name"])
+            content.append(obj.to_dictionary())
+        content.sort(key=lambda contact: contact["name"].lower)
         with open(cls.FILE_NAME, "w", newline="") as csv_file:
             writer = csv.DictWriter(
                 csv_file,
-                fieldnames=["name", "phone_number"]
+                fieldnames=["id", "name", "phone_number"]
             )
             writer.writeheader()
-            writer.writerows(new_file_content)
-            return True
+            writer.writerows(content)
 
     @classmethod
     def add_contact(cls, contact):
@@ -46,21 +45,24 @@ class ContactDatabase:
             raise TypeError("only contact objects are alowed")
         contacts = cls.load_contacts()
         for obj in contacts:
-            if obj.name == contact.name or obj.phone_number == contact.phone_number:
+            if (
+                obj.name.lower() == contact.name.lower()
+                or obj.phone_number == contact.phone_number
+            ):
                 return False
         contacts.append(contact)
         cls.save_contacts(contacts)
         return True
 
     @classmethod
-    def delete_contact(cls, contact_name):
+    def delete_contact(cls, contact_id):
         """to delete unwanted contact"""
 
         file_content = cls.load_contacts()
         new_file_content = []
         deleted = False
         for obj in file_content:
-            if obj.name == contact_name:
+            if obj.id == contact_id:
                 deleted = True
             else:
                 new_file_content.append(obj)
@@ -70,24 +72,24 @@ class ContactDatabase:
         return True
 
     @classmethod
-    def search_contact(cls, contact_name):
+    def search_contact(cls, contact_id):
         """searches if a contact exists of not"""
         file_content = cls.load_contacts()
         if not file_content:
             return None
         for obj in file_content:
-            if obj.name == contact_name:
+            if obj.id == contact_id:
                 return obj
         return None
 
     @classmethod
-    def update_contact(cls, old_contact, new_contact):
+    def update_contact(cls, contact_id, new_contact):
         """ """
         file_content = cls.load_contacts()
         new_file_content = []
         updated = False
         for obj in file_content:
-            if obj.name == old_contact.name:
+            if obj.id == contact_id:
                 new_file_content.append(new_contact)
                 updated = True
             else:
