@@ -98,3 +98,9 @@ class ContactDatabase:
             return False
         cls.save_contacts(new_file_content)
         return True
+
+    @classmethod
+    def view_contacts(cls):
+        """returns every contact list that has been saved"""
+
+        return cls.load_contacts()
