@@ -20,3 +20,11 @@ if __name__ == "__main__":
     obj_list = Contact.load_from_file()
     for i in obj_list:
         print("{} {}".format(id(i), i))
+
+
+if __name__ == "__main__":
+  6     print(Contact.search_contact("Top"))
+
+
+  if __name__ == "__main__":
+  6     Contact.delete_contact("shola")
