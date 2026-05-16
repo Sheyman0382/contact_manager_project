@@ -29,6 +29,7 @@ class ContactDatabase:
         new_file_content = []
         for obj in contacts:
             new_file_content.append(obj.to_dictionary())
+        new_file_content.sort(key=lambda contact: contact["name"])
         with open(cls.FILE_NAME, "w", newline="") as csv_file:
             writer = csv.DictWriter(
                 csv_file,
@@ -36,7 +37,7 @@ class ContactDatabase:
             )
             writer.writeheader()
             writer.writerows(new_file_content)
-            print("contact saved successfully")
+            return True
 
     @classmethod
     def add_contact(cls, contact):
