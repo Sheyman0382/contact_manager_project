@@ -7,10 +7,16 @@ import os
 class Contact:
     """contanct manager class"""
     FILE_NAME = "contacts.csv"
+    nb_of_objects = 0
 
-    def __init__(self, name, phone_number):
+    def __init__(self, name, phone_number, id=None):
         self.name = name
         self.phone_number = phone_number
+        if id is None:
+            Contact.nb_of_objects += 1
+            self.id = Contact.nb_of_objects
+        else:
+            self.id = id
 
     @property
     def name(self):
@@ -42,11 +48,16 @@ class Contact:
 
     def to_dictionary(self):
         """returns dictionary attributes of each objects"""
-        return {"name": self.name, "phone_number": self.phone_number}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "phone_number": self.phone_number
+        }
 
     @classmethod
     def from_dictionary(cls, dictionary):
         return cls(
+            int(dictionary["id"])
             dictionary["name"],
             dictionary["phone_number"]
         )
